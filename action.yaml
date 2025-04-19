@@ -2,35 +2,21 @@ name: "Kube Diagrams"
 description: "Generate architecture diagrams from Kubernetes manifests and Helm charts."
 
 inputs:
-  source:
-    description: 'Input source (file path, "-" for stdin, or Helm chart URL)'
-    required: true
-  output:
-    description: 'Output file name (e.g., "diagram.png")'
-    required: true
   type:
-    description: 'Type of input ("manifest" or "helm")'
+    description: "Input type"
     required: true
-    default: "manifest"
-  config:
-    description: 'Path to custom KubeDiagrams config file'
-    required: false
-    default: "KubeDiagrams.yaml"
-  without-namespace:
-    description: 'Omit namespace from diagram'
-    required: false
-    default: "false"
+    default: "kubernetes"
+  args:
+    description: "Arguments to pass into the tool"
+    required: true
+    default: ""
 
 runs:
   using: "docker"
   image: "philippemerle/kubediagrams:latest"
   args:
-    - ${{ inputs.type == 'manifest' && 'kube-diagrams' || 'helm-diagrams' }}
-    - ${{ inputs.config != 'KubeDiagrams.yaml' && format('-c {0}', inputs.config) || '' }}
-    - ${{ inputs.without-namespace == 'true' && '--without-namespace' || '' }}
-    - -o
-    - ${{ inputs.output }}
-    - ${{ inputs.source }}
+    - ${{ inputs.type == 'helm' && 'kube-diagrams' || 'helm-diagrams' }}
+    - ${{ fromJSON(format('["%s"]', join('","', split(' ', inputs.args))) }}
 
 branding:
   icon: "image"
