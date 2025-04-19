@@ -1,6 +1,11 @@
 name: "Test Action"
 on:
-  - workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      chart_url:
+        description: 'Helm chart URL to test'
+        required: true
+        default: "https://charts.jetstack.io/cert-manager"
 
 jobs:
   test:
@@ -8,9 +13,19 @@ jobs:
     steps:
       - name: "Checkout repository"
         uses: actions/checkout@v4
-      - name: "Generate Helm chart"
+
+      - name: "Generate diagram from Helm chart"
         uses: ./
+        id: generate
         with:
           type: helm
-          source: "https://charts.jetstack.io/cert-manager"
-          output: "cert-manager.png"
+          source: ${{ github.event.inputs.chart_url }}
+          output: "diagram.png"
+
+      - name: "Upload diagram artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: kube-diagram
+          path: diagram.png
+          if-no-files-found: error
+          retention-days: 1
