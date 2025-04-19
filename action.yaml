@@ -15,8 +15,9 @@ runs:
   using: "docker"
   image: "philippemerle/kubediagrams:latest"
   args:
-    - ${{ inputs.type == 'helm' && 'kube-diagrams' || 'helm-diagrams' }}
-    - ${{ fromJSON(format('["%s"]', join('","', split(' ', inputs.args))) }}
+    - /bin/sh
+    - -c
+    - ${{ format('{0} {1}', inputs.type == 'helm' && 'helm-diagrams' || 'kube-diagrams', inputs.args) }}
 
 branding:
   icon: "image"
