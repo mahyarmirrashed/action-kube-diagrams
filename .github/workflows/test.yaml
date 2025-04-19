@@ -18,7 +18,7 @@ jobs:
       - name: "Upload diagram artifact"
         uses: actions/upload-artifact@v4
         with:
-          name: kube-diagram
+          name: cert-manager.png
           path: cert-manager.png
           if-no-files-found: error
           retention-days: 1
