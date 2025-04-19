@@ -2,9 +2,12 @@ name: "Test Action"
 on:
   workflow_dispatch:
     inputs:
-      chart_url:
-        description: 'Helm chart URL to test'
-        required: true
+      type:
+        type: choice
+        options: [kubernetes, helm]
+        default: helm
+      args:
+        description: "Arguments"
         default: "https://charts.jetstack.io/cert-manager"
 
 jobs:
@@ -16,11 +19,9 @@ jobs:
 
       - name: "Generate diagram from Helm chart"
         uses: ./
-        id: generate
         with:
-          type: helm
-          source: ${{ github.event.inputs.chart_url }}
-          output: "diagram.png"
+          type: ${{ inputs.type }}
+          args: ${{ inputs.args }}
 
       - name: "Upload diagram artifact"
         uses: actions/upload-artifact@v4
